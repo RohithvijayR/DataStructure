@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+#define MAX_N 100000
+
+int A[MAX_N], N, K;
+
+// Function to check if we can achieve maxDiff <= D by removing at most K elements
+int canAchieve(int D) {
+    int removed = 0;
+    for (int i = 1; i < N; ++i) {
+        if (A[i] - A[i - 1] > D) {
+            removed++;
+            if (removed > K) return 0; // Exceeded allowed removals
+        }
+    }
+    return 1;
+}
+
+// Binary search to find the minimum possible maxDiff
+int minimizeMaxDiff() {
+    int left = 0, right = A[N - 1] - A[0], result = right;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (canAchieve(mid)) {
+            result = mid; // Try smaller differences
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return result;
+}
+
+int main() {
+    scanf("%d %d", &N, &K);
+    for (int i = 0; i < N; ++i) {
+        scanf("%d", &A[i]);
+    }
+
+    printf("%d\n", minimizeMaxDiff());
+    return 0;
+}

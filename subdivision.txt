@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int x, y;
+} Point;
+
+// Comparator function for sorting points by x-coordinate
+int comparePoints(const void *a, const void *b) {
+    return ((Point *)a)->x - ((Point *)b)->x;
+}
+
+void computeSubsegmentLengths(Point points[], int N, int X) {
+    double lengths[N];
+
+    for (int i = 0; i < N; ++i) {
+        double leftBoundary = (i == 0) ? 0 : (points[i].x + points[i - 1].x) / 2.0;
+        double rightBoundary = (i == N - 1) ? X : (points[i].x + points[i + 1].x) / 2.0;
+        lengths[i] = rightBoundary - leftBoundary;
+    }
+
+    // Print the result
+    for (int i = 0; i < N; ++i) {
+        printf("%.6lf\n", lengths[i]);
+    }
+}
+
+int main() {
+    int N, X;
+    scanf("%d %d", &N, &X);
+
+    Point points[N];
+    for (int i = 0; i < N; ++i) {
+        scanf("%d %d", &points[i].x, &points[i].y);
+    }
+
+    // Sort points by their x-coordinate
+    qsort(points, N, sizeof(Point), comparePoints);
+
+    // Compute and print subsegment lengths
+    computeSubsegmentLengths(points, N, X);
+
+    return 0;
+}

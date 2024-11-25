@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_N 100000
+#define MAX_LEN 100
+
+// Function to generate the canonical (smallest lexicographical) rotation of a string
+void getCanonicalForm(char *word, char *canonical) {
+    int len = strlen(word);
+    char temp[MAX_LEN + 1];
+    strcpy(temp, word);
+    
+    // Start with the word itself and check all rotations
+    for (int i = 1; i < len; i++) {
+        // Rotate the word by i positions
+        for (int j = 0; j < len; j++) {
+            temp[j] = word[(j + i) % len];
+        }
+        temp[len] = '\0';
+
+        // If the rotated version is lexicographically smaller, update canonical form
+        if (strcmp(temp, canonical) < 0) {
+            strcpy(canonical, temp);
+        }
+    }
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    char words[MAX_N][MAX_LEN + 1];
+    
+    for (int i = 0; i < N; i++) {
+        scanf("%s", words[i]);
+    }
+
+    // To keep track of canonical forms
+    char canonical[MAX_LEN + 1];
+    int result[MAX_N];
+
+    for (int i = 0; i < N; i++) {
+        getCanonicalForm(words[i], canonical);
+        result[i] = 0; // Initialize with 0, meaning no equivalent word found yet
+    }
+
+    // Check for equivalence using canonical forms
+    for (int i = 0; i < N; i++) {
+        getCanonicalForm(words[i], canonical);
+        for (int j = i + 1; j < N; j++) {
+            if (strcmp(canonical, words[j]) == 0) {
+                result[i] = 1; // Found equivalent word
+                result[j] = 1;
+            }
+        }
+    }
+
+    // Output the results
+    for (int i = 0; i < N; i++) {
+        printf("%d\n", result[i]);
+    }
+
+    return 0;
+}

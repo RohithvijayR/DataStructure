@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef struct {
+    int start, end;
+} Platform;
+
+int balls[MAX_N];
+Platform platforms[MAX_N];
+
+// Comparator for sorting balls
+int compareBalls(const void *a, const void *b) {
+    return (*(int *)a) - (*(int *)b);
+}
+
+// Comparator for sorting platforms
+int comparePlatforms(const void *a, const void *b) {
+    Platform *p1 = (Platform *)a;
+    Platform *p2 = (Platform *)b;
+    return p1->start - p2->start;
+}
+
+long long minimizePlatformMovement(int N, int M) {
+    qsort(balls, M, sizeof(int), compareBalls);
+    qsort(platforms, N, sizeof(Platform), comparePlatforms);
+
+    long long totalCost = 0;
+    int ballIndex = 0;
+
+    for (int i = 0; i < N; ++i) {
+        int platformCenter = (platforms[i].start + platforms[i].end) / 2;
+
+        // Find the nearest ball
+        while (ballIndex < M - 1 && abs(balls[ballIndex + 1] - platformCenter) < abs(balls[ballIndex] - platformCenter)) {
+            ballIndex++;
+        }
+
+        int target = balls[ballIndex];
+        int leftShift = abs(platforms[i].start - target);
+        int rightShift = abs(platforms[i].end - target);
+
+        // Move platform to the target ball
+        totalCost += leftShift + rightShift;
+    }
+
+    return totalCost;
+}
+
+int main() {
+    int N, M;
+    scanf("%d %d", &N, &M);
+
+    for (int i = 0; i < N; ++i) {
+        scanf("%d %d", &platforms[i].start, &platforms[i].end);
+    }
+
+    for (int i = 0; i < M; ++i) {
+        scanf("%d", &balls[i]);
+    }
+
+    printf("%lld\n", minimizePlatformMovement(N, M));
+    return 0;
+}

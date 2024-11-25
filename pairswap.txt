@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+#define MAX_N 100000
+
+int A[MAX_N], N, K;
+
+// Function to find the smallest lexicographical array
+void smallestLexicographicalArray() {
+    int swapPerformed = 0;
+
+    for (int i = 0; i < N && !swapPerformed; ++i) {
+        int limit = (i + K < N) ? i + K : N - 1;
+        int minIndex = i;
+
+        // Find the smallest element within range [i, limit]
+        for (int j = i + 1; j <= limit; ++j) {
+            if (A[j] < A[minIndex]) {
+                minIndex = j;
+            }
+        }
+
+        // If the smallest element is not at position i, perform the swap
+        if (minIndex != i) {
+            int temp = A[i];
+            A[i] = A[minIndex];
+            A[minIndex] = temp;
+            swapPerformed = 1;
+        }
+    }
+}
+
+int main() {
+    scanf("%d %d", &N, &K);
+    for (int i = 0; i < N; ++i) {
+        scanf("%d", &A[i]);
+    }
+
+    smallestLexicographicalArray();
+
+    for (int i = 0; i < N; ++i) {
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+
+    return 0;
+}

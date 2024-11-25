@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_N 200000
+#define MOD 1000000007
+#define BASE 31
+
+char S[MAX_N + 1];
+long long forwardHash[MAX_N + 1], reverseHash[MAX_N + 1], power[MAX_N + 1];
+int n, m;
+
+// Precompute hashes and powers
+void precompute() {
+    power[0] = 1;
+    for (int i = 1; i <= n; ++i) {
+        power[i] = (power[i - 1] * BASE) % MOD;
+        forwardHash[i] = (forwardHash[i - 1] * BASE + S[i - 1]) % MOD;
+    }
+    for (int i = n - 1; i >= 0; --i) {
+        reverseHash[i] = (reverseHash[i + 1] * BASE + S[i]) % MOD;
+    }
+}
+
+// Get the hash of a substring [l, r] (1-based indices)
+long long getHash(long long hash[], int l, int r) {
+    long long result = hash[r] - (hash[l - 1] * power[r - l + 1] % MOD);
+    if (result < 0) result += MOD;
+    return result;
+}
+
+// Check if S[l, r] is a palindrome
+int isPalindrome(int l, int r) {
+    return getHash(forwardHash, l, r) == getHash(reverseHash, n - r + 1, n - l + 1);
+}
+
+int main() {
+    scanf("%d %d", &n, &m);
+    scanf("%s", S);
+
+    precompute();
+
+    for (int q = 0; q < m; ++q) {
+        char type;
+        scanf(" %c", &type);
+
+        if (type == 'Q') { // Palindrome query
+            int i, j;
+            scanf("%d %d", &i, &j);
+            printf(isPalindrome(i, j) ? "YES\n" : "NO\n");
+        } else if (type == 'M') { // Modification queries
+            int subType;
+            scanf("%d", &subType);
+            if (subType == 1) {
+                int i, j, k;
+                scanf("%d %d %d", &i, &j, &k);
+                char temp[MAX_N + 1];
+                strncpy(temp, S + i - 1, j - i + 1);
+                temp[j - i + 1] = '\0';
+                memmove(S + i - 1, S + j, n - j + 1);
+                memmove(S + k + (j - i), S + k, n - k + 1);
+                strncpy(S + k, temp, j - i + 1);
+            } else if (subType == 2) {
+                int i, j;
+                scanf("%d %d", &i, &j);
+                for (int l = 0; l <= (j - i) / 2; ++l) {
+                    char temp = S[i + l - 1];
+                    S[i + l - 1] = S[j - l - 1];
+                    S[j - l - 1] = temp;
+                }
+            } else if (subType == 3) {
+                int i;
+                char c;
+                scanf("%d %c", &i, &c);
+                memmove(S + i, S + i - 1, n - i + 1);
+                S[i - 1] = c;
+                n++;
+            }
+            precompute(); // Recompute hashes after modification
+        }
+    }
+
+    return 0;
+}

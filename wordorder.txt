@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_N 100000
+#define MAX_LEN 1000
+
+char permutation[27];
+char strings[MAX_N][MAX_LEN + 1];
+int customOrder[256]; // ASCII range
+
+// Initialize custom order based on the permutation
+void initCustomOrder() {
+    for (int i = 0; i < 26; ++i) {
+        customOrder[permutation[i]] = i;           // Lowercase letters
+        customOrder[permutation[i] - 'a' + 'A'] = i + 26; // Uppercase letters
+    }
+}
+
+// Custom comparator function
+int compareStrings(const void *a, const void *b) {
+    char *str1 = *(char **)a;
+    char *str2 = *(char **)b;
+
+    while (*str1 && *str2) {
+        if (customOrder[*str1] != customOrder[*str2]) {
+            return customOrder[*str1] - customOrder[*str2];
+        }
+        str1++;
+        str2++;
+    }
+    return *str1 - *str2; // If one string is a prefix of the other
+}
+
+int main() {
+    int N;
+    scanf("%s", permutation);
+    scanf("%d", &N);
+
+    char *strArray[N];
+    for (int i = 0; i < N; ++i) {
+        scanf("%s", strings[i]);
+        strArray[i] = strings[i];
+    }
+
+    initCustomOrder();
+    qsort(strArray, N, sizeof(char *), compareStrings);
+
+    for (int i = 0; i < N; ++i) {
+        printf("%s\n", strArray[i]);
+    }
+
+    return 0;
+}

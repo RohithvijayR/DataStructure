@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MOD 1000000007
+#define MAX_N 100000
+
+typedef struct {
+    int u, v;
+} Edge;
+
+int distances[MAX_N + 1];
+Edge edges[MAX_N];
+
+// Comparator for sorting nodes by distance
+int compareDistances(const void *a, const void *b) {
+    return *(int *)a - *(int *)b;
+}
+
+// Fast modular exponentiation
+long long modPow(long long base, long long exp, long long mod) {
+    long long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result = (result * base) % mod;
+        }
+        base = (base * base) % mod;
+        exp /= 2;
+    }
+    return result;
+}
+
+int main() {
+    int N, M;
+    scanf("%d %d", &N, &M);
+
+    for (int i = 1; i <= N; ++i) {
+        scanf("%d", &distances[i]);
+    }
+
+    for (int i = 0; i < M; ++i) {
+        scanf("%d %d", &edges[i].u, &edges[i].v);
+    }
+
+    // Validation: Ensure D[1] = 0
+    if (distances[1] != 0) {
+        printf("0\n");
+        return 0;
+    }
+
+    // Sort distances
+    qsort(distances + 1, N, sizeof(int), compareDistances);
+
+    long long ways = 1;
+    int prevCount = 1;
+
+    for (int i = 2; i <= N; ++i) {
+        if (distances[i] - distances[i - 1] > 1) {
+            printf("0\n"); // Invalid distance sequence
+            return 0;
+        }
+
+        if (distances[i] > distances[i - 1]) {
+            prevCount = i - 1; // Update the count of nodes at the previous level
+        }
+
+        ways = (ways * prevCount) % MOD;
+    }
+
+    printf("%lld\n", ways);
+    return 0;
+}

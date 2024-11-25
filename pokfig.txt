@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_N 100000
+
+int alex[MAX_N], ben[MAX_N];
+
+int compare(const void *a, const void *b) {
+    return *(int *)a - *(int *)b;
+}
+
+long long pokemonFight(int N, int M) {
+    qsort(alex, N, sizeof(int), compare);
+    qsort(ben, M, sizeof(int), compare);
+
+    int i = 0, j = 0;
+    long long sumRemaining = 0;
+
+    // Try to win all the M fights
+    while (i < N && j < M) {
+        if (alex[i] > ben[j]) {
+            sumRemaining += alex[i];  // Add this Pokémon to the remaining pool
+            i++;  // Alex's Pokémon wins against Ben's Pokémon
+            j++;  // Ben's Pokémon is defeated
+        } else {
+            i++;  // If Alex's Pokémon can't win, move on to the next one
+        }
+    }
+
+    // If all fights are won, return the sum of the remaining combat powers
+    if (j == M) {
+        while (i < N) {
+            sumRemaining += alex[i];
+            i++;
+        }
+        return sumRemaining;
+    }
+
+    return -1;  // If not all fights can be won, return -1
+}
+
+int main() {
+    int N, M;
+    scanf("%d %d", &N, &M);
+
+    for (int i = 0; i < N; ++i) {
+        scanf("%d", &alex[i]);
+    }
+    for (int i = 0; i < M; ++i) {
+        scanf("%d", &ben[i]);
+    }
+
+    long long result = pokemonFight(N, M);
+    printf("%lld\n", result);
+
+    return 0;
+}

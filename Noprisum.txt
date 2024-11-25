@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_NUM 200000
+#define MAX_N 2000
+
+int S[MAX_N];
+bool isPrime[MAX_NUM + 1];
+bool adjacency[MAX_N][MAX_N];
+bool visited[MAX_N];
+int N;
+
+// Sieve of Eratosthenes to find all primes up to MAX_NUM
+void computePrimes() {
+    for (int i = 2; i <= MAX_NUM; ++i) {
+        isPrime[i] = true;
+    }
+    isPrime[0] = isPrime[1] = false;
+
+    for (int i = 2; i * i <= MAX_NUM; ++i) {
+        if (isPrime[i]) {
+            for (int j = i * i; j <= MAX_NUM; j += i) {
+                isPrime[j] = false;
+            }
+        }
+    }
+}
+
+// Depth-First Search to find connected components
+int dfs(int node) {
+    visited[node] = true;
+    int size = 1;
+
+    for (int i = 0; i < N; ++i) {
+        if (!visited[i] && adjacency[node][i]) {
+            size += dfs(i);
+        }
+    }
+
+    return size;
+}
+
+int main() {
+    scanf("%d", &N);
+    for (int i = 0; i < N; ++i) {
+        scanf("%d", &S[i]);
+    }
+
+    // Precompute primes
+    computePrimes();
+
+    // Build the adjacency matrix
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            if (i != j && isPrime[S[i] + S[j]]) {
+                adjacency[i][j] = true;
+            }
+        }
+    }
+
+    // Find the size of the largest independent set using complement graph
+    int maxIndependentSet = 0;
+    for (int i = 0; i < N; ++i) {
+        if (!visited[i]) {
+            maxIndependentSet += dfs(i);
+        }
+    }
+
+    // Output the minimum number of elements to remove
+    printf("%d\n", N - maxIndependentSet);
+    return 0;
+}

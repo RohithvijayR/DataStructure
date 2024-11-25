@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_NODES 100000
+
+int red[MAX_NODES], blue[MAX_NODES];
+
+// Comparator for sorting
+int compare(const void *a, const void *b) {
+    return *(int *)a - *(int *)b;
+}
+
+long long calculateMinDistances(int R, int B) {
+    qsort(red, R, sizeof(int), compare);
+    qsort(blue, B, sizeof(int), compare);
+
+    long long sumDistances = 0;
+    int blueIndex = 0;
+
+    for (int i = 0; i < R; ++i) {
+        // Move the blue pointer to the nearest blue node
+        while (blueIndex < B - 1 && abs(blue[blueIndex + 1] - red[i]) < abs(blue[blueIndex] - red[i])) {
+            blueIndex++;
+        }
+
+        // Add the minimum distance for the current red node
+        sumDistances += abs(blue[blueIndex] - red[i]);
+    }
+
+    return sumDistances;
+}
+
+int main() {
+    int N, R, B;
+    scanf("%d %d %d", &N, &R, &B);
+
+    for (int i = 0; i < R; ++i) {
+        scanf("%d", &red[i]);
+    }
+    for (int i = 0; i < B; ++i) {
+        scanf("%d", &blue[i]);
+    }
+
+    printf("%lld\n", calculateMinDistances(R, B));
+    return 0;
+}
