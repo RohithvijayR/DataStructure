@@ -55,3 +55,25 @@ Two-Pointer Approach: Used in problems like finding the closest red/blue nodes.
 Greedy Approaches: Used in problems like minimizing the maximum difference in arrays.
 Graph Theory: Used for problems related to graph reconstruction and edge removals.
 Dynamic Programming/DFS: Applied in problems where subproblems need to be solved recursively.
+
+
+
+**Setup and Compilation
+To compile and run the programs:
+
+Clone the repository:
+
+git clone https://github.com/RohithvijayR/DataStructure.git
+
+cd DataStructure
+
+Compile the C programs:
+
+gcc -o solution solution.c
+
+Run the compiled program:
+
+./solution
+
+
+Replace solution with the specific problem solution file (e.g., increasing_subarrays.c).**
